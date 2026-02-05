@@ -8,11 +8,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
         node-version: [18, 20, 22]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
@@ -27,18 +28,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
       - name: Build TypeScript
         run: npm run build
 
       - name: Type check
         run: npx tsc --noEmit
 
+      - name: Run tests
+        run: npm test
+
       - name: Verify dist files exist
-        run: |
-          test -f dist/index.js
-          test -f dist/db/index.js
-          test -f dist/db/store.js
-          test -f dist/search/fts.js
+        run: node -e "const fs = require('fs'); ['dist/index.js','dist/db/index.js','dist/db/store.js','dist/search/fts.js'].forEach(f => { if (!fs.existsSync(f)) { console.error('Missing:', f); process.exit(1); } }); console.log('All dist files present');"
 
   plugin-validate:
     runs-on: ubuntu-latest
@@ -68,9 +74,4 @@ jobs:
           "
 
       - name: Check required files exist
-        run: |
-          test -f skills/pro-workflow/SKILL.md
-          test -f commands/wrap-up.md
-          test -f commands/learn.md
-          test -f commands/search.md
-          test -f README.md
+        run: node -e "const fs = require('fs'); ['skills/pro-workflow/SKILL.md','commands/wrap-up.md','commands/learn.md','commands/search.md','commands/doctor.md','commands/export.md','commands/import.md','README.md'].forEach(f => { if (!fs.existsSync(f)) { console.error('Missing:', f); process.exit(1); } }); console.log('All required files present');"

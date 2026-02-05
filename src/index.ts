@@ -9,3 +9,32 @@ export {
   SearchResult,
   SearchOptions,
 } from './search/fts';
+export {
+  ensureMigrationsTable,
+  getAppliedMigrations,
+  getMigrationFiles,
+  runMigrations,
+  getMigrationStatus,
+  MigrationRecord,
+  MigrationStatus,
+} from './db/migrations';
+export {
+  exportLearnings,
+  exportToFile,
+  importLearnings,
+  importFromFile,
+  ExportData,
+  ExportOptions,
+  ImportOptions,
+  ImportResult,
+} from './export';
+export {
+  checkDatabase,
+  checkMigrations,
+  checkDistFiles,
+  checkFtsIntegrity,
+  runDiagnostics,
+  CheckStatus,
+  CheckResult,
+  DiagnosticsReport,
+} from './doctor';

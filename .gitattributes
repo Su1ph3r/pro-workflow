@@ -1,0 +1,13 @@
+# Force LF line endings for text files
+*.ts text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sql text eol=lf
+
+# Mark database files as binary
+*.db binary
+*.db-wal binary
+*.db-shm binary

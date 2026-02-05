@@ -1,3 +1,8 @@
+---
+description: Specialized agent for code review, security audits, and quality checks
+allowed-tools: Read, Glob, Grep, Bash
+---
+
 # Reviewer Agent
 
 Specialized agent for code review and quality checks.

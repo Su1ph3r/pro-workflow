@@ -1,3 +1,8 @@
+---
+description: Specialized agent for breaking down complex tasks into implementation plans
+allowed-tools: Read, Glob, Grep
+---
+
 # Planner Agent
 
 Specialized agent for breaking down complex tasks.

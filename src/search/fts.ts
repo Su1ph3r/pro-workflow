@@ -15,7 +15,7 @@ export interface SearchOptions {
 export function searchLearnings(
   db: Database.Database,
   query: string,
-  options: SearchOptions = {}
+  options: SearchOptions = {},
 ): SearchResult[] {
   const { limit = 10, project, category } = options;
 
@@ -57,7 +57,7 @@ export function searchLearnings(
 export function searchByCategory(
   db: Database.Database,
   category: string,
-  options: SearchOptions = {}
+  options: SearchOptions = {},
 ): Learning[] {
   const { limit = 10, project } = options;
 
@@ -83,7 +83,7 @@ export function searchByCategory(
 export function getRelatedLearnings(
   db: Database.Database,
   learningId: number,
-  limit: number = 5
+  limit: number = 5,
 ): SearchResult[] {
   const learningStmt = db.prepare(`SELECT * FROM learnings WHERE id = ?`);
   const learning = learningStmt.get(learningId) as Learning | undefined;
@@ -103,10 +103,7 @@ export function getRelatedLearnings(
   return results.filter((r) => r.id !== learningId).slice(0, limit);
 }
 
-export function getMostAppliedLearnings(
-  db: Database.Database,
-  limit: number = 10
-): Learning[] {
+export function getMostAppliedLearnings(db: Database.Database, limit: number = 10): Learning[] {
   const stmt = db.prepare(`
     SELECT * FROM learnings
     WHERE times_applied > 0
@@ -120,7 +117,7 @@ export function getMostAppliedLearnings(
 export function getRecentLearnings(
   db: Database.Database,
   limit: number = 10,
-  project?: string
+  project?: string,
 ): Learning[] {
   let sql = `SELECT * FROM learnings`;
   const params: (string | number)[] = [];
@@ -138,6 +135,8 @@ export function getRecentLearnings(
 }
 
 function sanitizeQuery(query: string): string {
+  const FTS_OPERATORS = new Set(['AND', 'OR', 'NOT', 'NEAR']);
+
   return query
     .replace(/[^\w\s*"]/g, ' ')
     .replace(/\s+/g, ' ')
@@ -147,6 +146,9 @@ function sanitizeQuery(query: string): string {
     .map((word) => {
       if (word.startsWith('"') && word.endsWith('"')) {
         return word;
+      }
+      if (FTS_OPERATORS.has(word.toUpperCase())) {
+        return word.toUpperCase();
       }
       if (!word.includes('*')) {
         return `${word}*`;
@@ -158,18 +160,95 @@ function sanitizeQuery(query: string): string {
 
 function extractKeywords(text: string): string[] {
   const stopWords = new Set([
-    'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been',
-    'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
-    'would', 'could', 'should', 'may', 'might', 'must', 'shall',
-    'can', 'need', 'to', 'of', 'in', 'for', 'on', 'with', 'at',
-    'by', 'from', 'as', 'into', 'through', 'during', 'before',
-    'after', 'above', 'below', 'between', 'under', 'again',
-    'further', 'then', 'once', 'here', 'there', 'when', 'where',
-    'why', 'how', 'all', 'each', 'few', 'more', 'most', 'other',
-    'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same',
-    'so', 'than', 'too', 'very', 'just', 'and', 'but', 'if', 'or',
-    'because', 'until', 'while', 'although', 'though', 'this',
-    'that', 'these', 'those', 'it', 'its',
+    'a',
+    'an',
+    'the',
+    'is',
+    'are',
+    'was',
+    'were',
+    'be',
+    'been',
+    'being',
+    'have',
+    'has',
+    'had',
+    'do',
+    'does',
+    'did',
+    'will',
+    'would',
+    'could',
+    'should',
+    'may',
+    'might',
+    'must',
+    'shall',
+    'can',
+    'need',
+    'to',
+    'of',
+    'in',
+    'for',
+    'on',
+    'with',
+    'at',
+    'by',
+    'from',
+    'as',
+    'into',
+    'through',
+    'during',
+    'before',
+    'after',
+    'above',
+    'below',
+    'between',
+    'under',
+    'again',
+    'further',
+    'then',
+    'once',
+    'here',
+    'there',
+    'when',
+    'where',
+    'why',
+    'how',
+    'all',
+    'each',
+    'few',
+    'more',
+    'most',
+    'other',
+    'some',
+    'such',
+    'no',
+    'nor',
+    'not',
+    'only',
+    'own',
+    'same',
+    'so',
+    'than',
+    'too',
+    'very',
+    'just',
+    'and',
+    'but',
+    'if',
+    'or',
+    'because',
+    'until',
+    'while',
+    'although',
+    'though',
+    'this',
+    'that',
+    'these',
+    'those',
+    'it',
+    'its',
   ]);
 
   return text

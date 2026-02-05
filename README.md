@@ -5,21 +5,20 @@
 
 Battle-tested Claude Code workflows from power users. Self-correcting memory, parallel worktrees, wrap-up rituals, and the 80/20 AI coding ratio.
 
-**v1.1.0: Agent teams, custom subagents, adaptive thinking, smart commit, and session insights!**
+**v1.2.0: Migration system, export/import, doctor diagnostics, testing, and CI improvements!**
 
 **If this helps your workflow, please give it a star!**
 
-## What's New in v1.1.0
+## What's New in v1.2.0
 
-- **`/commit`**: Smart commit with quality gates, code review, and learning capture
-- **`/insights`**: Session analytics, learning patterns, correction trends, and productivity metrics
-- **Agent Teams**: Coordinate multiple Claude Code sessions with shared task lists and inter-agent messaging
-- **Custom Subagents**: Create project or user-level subagents with custom tools, memory, and hooks
-- **Adaptive Thinking**: Opus 4.6 calibrates reasoning depth per task automatically
-- **Context Compaction**: Keep long-running agents alive with auto-compaction and PreCompact hooks
-- **Updated Model Selection**: Haiku 4.5, Sonnet 4.5, Opus 4.6 model recommendations
-- **Persistent Storage**: Learnings survive reboots in `~/.pro-workflow/data.db`
-- **Full-Text Search**: Find past learnings instantly with BM25-powered FTS5
+- **Migration System**: Versioned SQL migrations with tracking and status reporting
+- **`/export`**: Backup learnings to JSON with project filtering and session inclusion
+- **`/import`**: Restore learnings from JSON with duplicate detection
+- **`/doctor`**: Health diagnostics for database, FTS integrity, migrations, and dist files
+- **Test Suite**: 66 tests covering store, FTS search, migrations, export/import, and doctor
+- **ESLint + Prettier**: Consistent code quality and formatting
+- **Cross-Platform CI**: OS matrix (Ubuntu, macOS, Windows) with lint, format, and test steps
+- **`.gitattributes`**: LF line endings enforcement for cross-platform consistency
 
 ## The Core Idea
 
@@ -114,8 +113,11 @@ After plugin install, commands are namespaced:
 | `/pro-workflow:learn` | **NEW** Claude Code best practices & save learnings |
 | `/pro-workflow:search` | **NEW** Search learnings by keyword |
 | `/pro-workflow:list` | **NEW** List all stored learnings |
-| `/pro-workflow:commit` | **NEW** Smart commit with quality gates and code review |
-| `/pro-workflow:insights` | **NEW** Session analytics and learning patterns |
+| `/pro-workflow:commit` | Smart commit with quality gates and code review |
+| `/pro-workflow:insights` | Session analytics and learning patterns |
+| `/pro-workflow:doctor` | Health diagnostics for database and FTS |
+| `/pro-workflow:export` | Export learnings to JSON file |
+| `/pro-workflow:import` | Import learnings from JSON file |
 
 ## Database Features
 
@@ -127,6 +129,10 @@ Learnings are stored in SQLite with FTS5 full-text search:
 ~/.pro-workflow/
 └── data.db    # SQLite database with learnings and sessions
 ```
+
+### Migration System
+
+Schema changes are managed through versioned SQL migrations in `src/db/migrations/`. Migrations run automatically on database initialization and are tracked in the `_migrations` table. Use `/doctor` to check migration status.
 
 ### Search Examples
 
@@ -202,6 +208,15 @@ Coordinate multiple Claude Code sessions working together:
 - Delegate mode (`Shift+Tab`): lead orchestrates only
 - Docs: https://code.claude.com/docs/agent-teams
 
+## Development
+
+```bash
+npm run lint          # Check for lint errors
+npm run format:check  # Check formatting
+npm test              # Run all tests
+npm run build         # Compile TypeScript
+```
+
 ## Structure
 
 ```
@@ -214,10 +229,23 @@ pro-workflow/
 │   ├── db/
 │   │   ├── index.ts          # Database initialization
 │   │   ├── store.ts          # Stateless store factory
+│   │   ├── migrations.ts     # Migration runner
+│   │   ├── migrations/       # SQL migration files
+│   │   │   └── 001_initial.sql
 │   │   └── schema.sql        # SQLite schema with FTS5
 │   ├── search/
 │   │   └── fts.ts            # BM25 search helpers
+│   ├── export.ts             # Export/import module
+│   ├── doctor.ts             # Health diagnostics
 │   └── index.ts
+├── tests/                    # Vitest test suites
+│   ├── db/
+│   │   ├── store.test.ts
+│   │   └── migrations.test.ts
+│   ├── search/
+│   │   └── fts.test.ts
+│   ├── export.test.ts
+│   └── doctor.test.ts
 ├── dist/                     # Compiled JavaScript
 ├── skills/
 │   └── pro-workflow/
@@ -233,23 +261,30 @@ pro-workflow/
 │   ├── search.md
 │   ├── list.md
 │   ├── commit.md
-│   └── insights.md
+│   ├── insights.md
+│   ├── doctor.md
+│   ├── export.md
+│   └── import.md
 ├── hooks/
-│   └── hooks.json # Hooks file
+│   └── hooks.json
 ├── scripts/                  # Hook scripts
 ├── contexts/
-│   ├── dev.md # Dev context
-│   ├── review.md # Review context
-│   └── research.md # Research context
+│   ├── dev.md
+│   ├── review.md
+│   └── research.md
 ├── references/
-│   └── claude-code-resources.md # Claude code resources reference file
+│   └── claude-code-resources.md
 ├── rules/
-│   └── core-rules.md # Core rules file
+│   └── core-rules.md
 ├── templates/
-│   └── split-claude-md/ # Split claude md template
+│   └── split-claude-md/
 ├── package.json
-├── tsconfig.json # TypeScript configuration file
-└── README.md # README file
+├── tsconfig.json
+├── vitest.config.ts
+├── eslint.config.mjs
+├── .prettierrc
+├── .gitattributes
+└── README.md
 ```
 
 ## Learn Claude Code

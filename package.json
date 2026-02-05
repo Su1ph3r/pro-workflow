@@ -1,6 +1,6 @@
 {
   "name": "pro-workflow",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Battle-tested Claude Code workflows with agent teams, smart commit, insights, and searchable learnings",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,7 +8,14 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
-    "db:init": "node dist/db/index.js"
+    "db:init": "node dist/db/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write 'src/**/*.ts'",
+    "format:check": "prettier --check 'src/**/*.ts'"
   },
   "keywords": [
     "claude-code",
@@ -42,9 +49,15 @@
     "better-sqlite3": "^12.6.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20.17.14",
-    "typescript": "^5.7.3"
+    "@vitest/coverage-v8": "^3.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^3.0.0"
   },
   "files": [
     "dist",
